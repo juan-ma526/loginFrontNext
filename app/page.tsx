@@ -1,25 +1,30 @@
 "use client";
 
 import { NextResponse } from "next/server";
-import { FormEvent, useState } from "react";
+import { FormEvent, useContext, useEffect, useState } from "react";
+import { AuthContext } from "./auth-Provider";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const { signUp, user, isAuthenticated, errors } = useContext(AuthContext);
+  const router = useRouter();
+
+  /* console.log(isAuthenticated);
+  console.log(user);
+  console.log(errors, "estoy en el front"); */
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push("/profile");
+    }
+  }, [isAuthenticated]);
 
   const registerUser = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const response = await fetch("http://localhost:4000/api/auth/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ name: name, email: email, password: password }),
-    });
-    const data = await response.json();
-
-    return NextResponse.json(data);
+    signUp(name, email, password);
   };
 
   return (
@@ -27,10 +32,19 @@ export default function Home() {
       <div className="max-w-md w-full mx-auto">
         <div className="text-center font-medium text-xl">something</div>
         <div className="text-3xl font-bold text-gray-900 mt-2 text-center">
-          another text
+          Registro
         </div>
       </div>
       <div className="max-w-md w-full mx-auto mt-4 bg-white p-8 border border-gray-300">
+        {errors ? (
+          <div className="text-white border border-gray-300 bg-red-500 flex flex-col mb-2 p-1">
+            {errors.map((error, index) => (
+              <span key={index}>{error}</span>
+            ))}
+          </div>
+        ) : (
+          ""
+        )}
         <form onSubmit={registerUser} className="space-y-6">
           <div>
             <label
