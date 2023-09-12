@@ -1,24 +1,27 @@
 "use client";
-
-import { NextResponse } from "next/server";
 import { FormEvent, useState } from "react";
+import { NextResponse } from "next/server";
 
-export default function Home() {
-  const [name, setName] = useState<string>("");
+export default function LoginPage() {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [user, setUser] = useState({});
+  console.log(user);
 
-  const registerUser = async (e: FormEvent<HTMLFormElement>) => {
+  const loginUser = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const response = await fetch("http://localhost:4000/api/auth/register", {
+    const response = await fetch("http://localhost:4000/api/auth/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ name: name, email: email, password: password }),
+      body: JSON.stringify({
+        email: email,
+        password: password,
+      }),
     });
     const data = await response.json();
-
+    setUser(data);
     return NextResponse.json(data);
   };
 
@@ -27,25 +30,11 @@ export default function Home() {
       <div className="max-w-md w-full mx-auto">
         <div className="text-center font-medium text-xl">something</div>
         <div className="text-3xl font-bold text-gray-900 mt-2 text-center">
-          another text
+          Login
         </div>
       </div>
       <div className="max-w-md w-full mx-auto mt-4 bg-white p-8 border border-gray-300">
-        <form onSubmit={registerUser} className="space-y-6">
-          <div>
-            <label
-              htmlFor="Name"
-              className="text-sm font-bold text-gray-600 block"
-            >
-              Nombre
-            </label>
-            <input
-              type="text"
-              className="w-full p-2 border border-gray-300 rounded mt-1 text-black"
-              id="Name"
-              onChange={(e) => setName(e.target.value)}
-            />
-          </div>
+        <form onSubmit={loginUser} className="space-y-6">
           <div>
             <label
               htmlFor="email"
