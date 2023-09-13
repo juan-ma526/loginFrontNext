@@ -1,28 +1,23 @@
 "use client";
-import { FormEvent, useState } from "react";
-import { NextResponse } from "next/server";
+import { FormEvent, useContext, useEffect, useState } from "react";
+import { AuthContext } from "../auth-Provider";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [user, setUser] = useState({});
-  console.log(user);
+  const { signIn, isAuthenticated, errors } = useContext(AuthContext);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push("/profile");
+    }
+  }, [isAuthenticated]);
 
   const loginUser = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const response = await fetch("http://localhost:4000/api/auth/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email: email,
-        password: password,
-      }),
-    });
-    const data = await response.json();
-    setUser(data);
-    return NextResponse.json(data);
+    signIn(email, password);
   };
 
   return (
@@ -34,6 +29,15 @@ export default function LoginPage() {
         </div>
       </div>
       <div className="max-w-md w-full mx-auto mt-4 bg-white p-8 border border-gray-300">
+        {errors ? (
+          <div className="text-white border border-gray-300 bg-red-500 flex flex-col mb-2 p-1">
+            {errors.map((error, index) => (
+              <span key={index}>{error}</span>
+            ))}
+          </div>
+        ) : (
+          ""
+        )}
         <form onSubmit={loginUser} className="space-y-6">
           <div>
             <label
@@ -74,9 +78,12 @@ export default function LoginPage() {
               </label>
             </div>
             <div>
-              <a href="" className="font-medium text-sm text-blue-500">
-                Forgot Password?
-              </a>
+              <li
+                onClick={() => router.push("/")}
+                className="font-medium text-sm text-blue-500 cursor-pointer list-none"
+              >
+                Registrate
+              </li>
             </div>
           </div>
           <div>

@@ -1,6 +1,5 @@
 "use client";
 
-import { NextResponse } from "next/server";
 import { FormEvent, useContext, useEffect, useState } from "react";
 import { AuthContext } from "./auth-Provider";
 import { useRouter } from "next/navigation";
@@ -11,10 +10,6 @@ export default function Home() {
   const [password, setPassword] = useState<string>("");
   const { signUp, user, isAuthenticated, errors } = useContext(AuthContext);
   const router = useRouter();
-
-  /* console.log(isAuthenticated);
-  console.log(user);
-  console.log(errors, "estoy en el front"); */
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -99,9 +94,12 @@ export default function Home() {
               </label>
             </div>
             <div>
-              <a href="" className="font-medium text-sm text-blue-500">
-                Forgot Password?
-              </a>
+              <li
+                onClick={() => router.push("/login")}
+                className="font-medium text-sm text-blue-500 cursor-pointer list-none"
+              >
+                Ya tienes cuenta? logueate
+              </li>
             </div>
           </div>
           <div>
